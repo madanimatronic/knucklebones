@@ -1,0 +1,41 @@
+{
+  "name": "knucklebones-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "format": "prettier --check ./src",
+    "format:fix": "prettier --write ./src"
+  },
+  "dependencies": {
+    "@emotion/css": "^11.13.5",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^6.4.2",
+    "@next/eslint-plugin-next": "^15.1.6",
+    "clsx": "^2.1.1",
+    "eslint-plugin-react": "^7.37.4",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "nanoid": "^5.0.9",
+    "next": "15.1.6",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zustand": "^5.0.3"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.1.6",
+    "eslint-config-prettier": "^10.0.1",
+    "prettier": "3.4.2",
+    "prettier-plugin-organize-imports": "^4.1.0",
+    "sass": "^1.83.4",
+    "typescript": "^5",
+    "typescript-eslint": "^8.22.0"
+  }
+}
