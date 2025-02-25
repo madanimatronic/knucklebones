@@ -1,0 +1,24 @@
+.field {
+  display: flex;
+  padding: 5px;
+  column-gap: 10px;
+  width: fit-content;
+  background-color: aqua;
+
+  .column {
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    row-gap: 10px;
+    background-color: brown;
+
+    .square {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 30px;
+      height: 30px;
+      background-color: blueviolet;
+    }
+  }
+}
