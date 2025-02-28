@@ -5,27 +5,33 @@
 // TEMP!!!
 // Временное сохранение очень плохой реализации knucklebones
 
-interface IPlayer {
+export interface IPlayer {
   id: number;
   name: string;
   field: number[][];
 }
 
-interface IGame {
-  players: IPlayer[];
+export interface IGame {
   getAvailableColumns: (player: IPlayer) => number[]; // Возвращает индексы доступных колонок
   isRunning: () => boolean; // Проверка продолжительности игры
   calculatePlayerPoints: (player: IPlayer) => number;
   calculateGameResult: () => string; // Подсчёт результата игры
   throwDice: () => number;
+  // Возвращает новые поля игроков или undefined при ошибке
   pushDiceInColumn: (
     pushPlayer: IPlayer,
     columnIndex: number,
     diceValue: number,
-  ) => void;
+    otherPlayer: IPlayer,
+  ) =>
+    | {
+        pushPlayerField: number[][];
+        otherPlayerField: number[][];
+      }
+    | undefined;
 }
 
-class Player implements IPlayer {
+export class Player implements IPlayer {
   id: number;
   name: string;
   field: number[][] = [[], [], []];
@@ -36,12 +42,12 @@ class Player implements IPlayer {
   }
 }
 
-class Game implements IGame {
-  players: IPlayer[];
+export class Game implements IGame {
+  // players: IPlayer[];
 
-  constructor(players: IPlayer[]) {
-    this.players = players;
-  }
+  // constructor(players: IPlayer[]) {
+  //   this.players = players;
+  // }
 
   getAvailableColumns(player: IPlayer): number[] {
     const result: number[] = [];
@@ -51,8 +57,8 @@ class Game implements IGame {
     return result;
   }
 
-  isRunning(): boolean {
-    for (const player of this.players) {
+  isRunning(...players: IPlayer[]): boolean {
+    for (const player of players) {
       if (this.getAvailableColumns(player).length === 0) return false;
     }
     return true;
@@ -66,22 +72,22 @@ class Game implements IGame {
     );
   }
 
-  calculateGameResult(): string {
+  calculateGameResult(...players: IPlayer[]): string {
     // Защита
-    if (this.players.length < 2) return 'error: less than 2 players';
+    if (players.length < 2) return 'error: less than 2 players';
 
     if (
-      this.calculatePlayerPoints(this.players[0]) >
-      this.calculatePlayerPoints(this.players[1])
+      this.calculatePlayerPoints(players[0]) >
+      this.calculatePlayerPoints(players[1])
     ) {
-      return `${this.players[0].name} wins!`;
+      return `${players[0].name} wins!`;
     } else if (
-      this.calculatePlayerPoints(this.players[0]) ===
-      this.calculatePlayerPoints(this.players[1])
+      this.calculatePlayerPoints(players[0]) ===
+      this.calculatePlayerPoints(players[1])
     ) {
       return 'Draw!';
     } else {
-      return `${this.players[1].name} wins!`;
+      return `${players[1].name} wins!`;
     }
   }
 
@@ -93,60 +99,169 @@ class Game implements IGame {
     pushPlayer: IPlayer,
     columnIndex: number,
     diceValue: number,
-  ): void {
+    otherPlayer: IPlayer,
+  ):
+    | {
+        pushPlayerField: number[][];
+        otherPlayerField: number[][];
+      }
+    | undefined {
     // Защита
     if (!this.getAvailableColumns(pushPlayer).includes(columnIndex)) {
       console.error('Error: unavailable column push attempt');
       return;
     }
 
-    pushPlayer.field[columnIndex].push(diceValue);
+    // Копируем поля игроков
+    const result = {
+      pushPlayerField: pushPlayer.field.map((column) => [...column]),
+      otherPlayerField: otherPlayer.field.map((column) => [...column]),
+    };
 
-    this.players.forEach((player) => {
-      if (player.id !== pushPlayer.id) {
-        const mirroredIndex = player.field.length - 1 - columnIndex;
-        player.field[mirroredIndex] = player.field[mirroredIndex].filter(
-          (dice) => dice !== diceValue,
-        );
-      }
-    });
+    result.pushPlayerField[columnIndex].push(diceValue);
+
+    const mirroredIndex = result.otherPlayerField.length - 1 - columnIndex;
+    result.otherPlayerField[mirroredIndex] = result.otherPlayerField[
+      mirroredIndex
+    ].filter((dice) => dice !== diceValue);
+
+    return result;
+
+    // pushPlayer.field[columnIndex].push(diceValue);
+
+    // players.forEach((player) => {
+    //   if (player.id !== pushPlayer.id) {
+    //     const mirroredIndex = player.field.length - 1 - columnIndex;
+    //     player.field[mirroredIndex] = player.field[mirroredIndex].filter(
+    //       (dice) => dice !== diceValue,
+    //     );
+    //   }
+    // });
   }
 }
 
-const mainPlayer = new Player(1, 'Super Main Player');
-const bot = new Player(2, 'Bot1');
+// export class Player implements IPlayer {
+//   id: number;
+//   name: string;
+//   field: number[][] = [[], [], []];
 
-const game = new Game([mainPlayer, bot]);
+//   constructor(userId: number, userName: string) {
+//     this.id = userId;
+//     this.name = userName;
+//   }
+// }
 
-let currentActivePlayer =
-  game.players[Math.floor(Math.random() * game.players.length)];
+// export class Game implements IGame {
+//   players: IPlayer[];
 
-for (let i = 0; i < 35; i++) {
-  if (game.isRunning()) {
-    // Проверка на не главного игрока
-    if (currentActivePlayer.id !== 1) {
-      const availableColumns = game.getAvailableColumns(currentActivePlayer);
-      game.pushDiceInColumn(
-        currentActivePlayer,
-        availableColumns[Math.floor(Math.random() * availableColumns.length)],
-        game.throwDice(),
-      );
-      currentActivePlayer = mainPlayer;
-    } else {
-      const diceValue = game.throwDice();
-      const selectedColumn = Number(
-        prompt(
-          `dice value: ${diceValue}, your field: ${JSON.stringify(currentActivePlayer.field)}, bot field: ${JSON.stringify(bot.field)}; select column: ${game.getAvailableColumns(currentActivePlayer)}`,
-          '',
-        ),
-      );
-      game.pushDiceInColumn(currentActivePlayer, selectedColumn, diceValue);
-      currentActivePlayer = bot;
-    }
-  } else {
-    console.log(game.calculateGameResult());
-    console.log('mainPlayer field:', mainPlayer.field);
-    console.log('Bot field', bot.field);
-    break;
-  }
-}
+//   constructor(players: IPlayer[]) {
+//     this.players = players;
+//   }
+
+//   getAvailableColumns(player: IPlayer): number[] {
+//     const result: number[] = [];
+//     player.field.forEach((column, index) => {
+//       if (column.length < 3) result.push(index);
+//     });
+//     return result;
+//   }
+
+//   isRunning(): boolean {
+//     for (const player of this.players) {
+//       if (this.getAvailableColumns(player).length === 0) return false;
+//     }
+//     return true;
+//   }
+
+//   calculatePlayerPoints(player: IPlayer): number {
+//     return player.field.reduce(
+//       (fieldSum, column) =>
+//         fieldSum + column.reduce((columnSum, value) => columnSum + value, 0),
+//       0,
+//     );
+//   }
+
+//   calculateGameResult(): string {
+//     // Защита
+//     if (this.players.length < 2) return 'error: less than 2 players';
+
+//     if (
+//       this.calculatePlayerPoints(this.players[0]) >
+//       this.calculatePlayerPoints(this.players[1])
+//     ) {
+//       return `${this.players[0].name} wins!`;
+//     } else if (
+//       this.calculatePlayerPoints(this.players[0]) ===
+//       this.calculatePlayerPoints(this.players[1])
+//     ) {
+//       return 'Draw!';
+//     } else {
+//       return `${this.players[1].name} wins!`;
+//     }
+//   }
+
+//   throwDice(): number {
+//     return Math.floor(Math.random() * 6 + 1);
+//   }
+
+//   pushDiceInColumn(
+//     pushPlayer: IPlayer,
+//     columnIndex: number,
+//     diceValue: number,
+//   ): void {
+//     // Защита
+//     if (!this.getAvailableColumns(pushPlayer).includes(columnIndex)) {
+//       console.error('Error: unavailable column push attempt');
+//       return;
+//     }
+
+//     pushPlayer.field[columnIndex].push(diceValue);
+
+//     this.players.forEach((player) => {
+//       if (player.id !== pushPlayer.id) {
+//         const mirroredIndex = player.field.length - 1 - columnIndex;
+//         player.field[mirroredIndex] = player.field[mirroredIndex].filter(
+//           (dice) => dice !== diceValue,
+//         );
+//       }
+//     });
+//   }
+// }
+
+// const mainPlayer = new Player(1, 'Super Main Player');
+// const bot = new Player(2, 'Bot1');
+
+// const game = new Game([mainPlayer, bot]);
+
+// let currentActivePlayer =
+//   game.players[Math.floor(Math.random() * game.players.length)];
+
+// for (let i = 0; i < 35; i++) {
+//   if (game.isRunning()) {
+//     // Проверка на не главного игрока
+//     if (currentActivePlayer.id !== 1) {
+//       const availableColumns = game.getAvailableColumns(currentActivePlayer);
+//       game.pushDiceInColumn(
+//         currentActivePlayer,
+//         availableColumns[Math.floor(Math.random() * availableColumns.length)],
+//         game.throwDice(),
+//       );
+//       currentActivePlayer = mainPlayer;
+//     } else {
+//       const diceValue = game.throwDice();
+//       const selectedColumn = Number(
+//         prompt(
+//           `dice value: ${diceValue}, your field: ${JSON.stringify(currentActivePlayer.field)}, bot field: ${JSON.stringify(bot.field)}; select column: ${game.getAvailableColumns(currentActivePlayer)}`,
+//           '',
+//         ),
+//       );
+//       game.pushDiceInColumn(currentActivePlayer, selectedColumn, diceValue);
+//       currentActivePlayer = bot;
+//     }
+//   } else {
+//     console.log(game.calculateGameResult());
+//     console.log('mainPlayer field:', mainPlayer.field);
+//     console.log('Bot field', bot.field);
+//     break;
+//   }
+// }
