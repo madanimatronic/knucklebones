@@ -1,24 +1,36 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as mixins;
+
 .field {
+  --square-size: 90px;
+  --field-gap: 16px;
+  --accent-color: rgb(58, 172, 83);
+
   display: flex;
-  padding: 5px;
-  column-gap: 10px;
+  // padding: 5px;
+  // column-gap: 10px;
+  column-gap: var(--field-gap);
   width: fit-content;
-  background-color: aqua;
+  // background-color: aqua;
+  // @include mixins.custom-dashed-border(2px, $full-red, 5px);
+  @include mixins.custom-dashed-border(2px, rgb(130, 130, 130), 5px);
 
   .column {
     display: flex;
     flex-direction: column;
-    padding: 5px;
-    row-gap: 10px;
-    background-color: brown;
+    // padding: 5px;
+    // row-gap: 10px;
+    row-gap: var(--field-gap);
+    // background-color: brown;
 
     .square {
       display: flex;
       justify-content: center;
       align-items: center;
-      width: 30px;
-      height: 30px;
-      background-color: blueviolet;
+      width: var(--square-size);
+      height: var(--square-size);
+      // background-color: blueviolet;
+      background-color: rgba(63, 63, 63, 0.755);
     }
   }
 
@@ -26,4 +38,9 @@
     background-color: yellowgreen;
     cursor: pointer;
   }
+}
+
+// Класс для главного ирока. Выделяет его интерфейс
+.mainPlayer {
+  @include mixins.custom-dashed-border(2px, $full-red, 5px);
 }

@@ -3,11 +3,13 @@ import { Seo } from '@/components/Seo';
 import { Game, Player } from '@/game/entities/Game';
 import { reverseField } from '@/game/utils/utils';
 import s from '@/styles/Home.module.scss';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 // TODO: хорошим и современным способом разделить логику и UI
 // В компонентах и не только - это вынести логику в кастомный хук (если будет нужно)
 // TODO: подумать над тестами и storybook в проекте (если будет уместно)
+// TODO: не забыть про подсчёт очков в колонках и увеличении очков
+// при комбинациях кубиков
 
 export default function Home() {
   const test = [
@@ -16,9 +18,9 @@ export default function Home() {
     [3, 6, 1],
   ];
 
-  // TODO: возможно стоит вынести в проп страницы
-  // или как-то оптимизировать, чтобы избежать повторных объявлений
-  const game = new Game();
+  // TODO: возможно стоит сделать методы Game статическими и тогда
+  // не надо будет создавать объект класса
+  const game = useMemo(() => new Game(), []);
   // const test = [
   //   [],
   //   [],
@@ -109,7 +111,6 @@ export default function Home() {
                     playerState,
                     colIndex,
                     diceState,
-                    // game.throwDice(),
                     botState,
                   );
 
@@ -136,6 +137,18 @@ export default function Home() {
                   ? undefined
                   : game.calculateGameResult(playerState, botState)}
               </p>
+              <button
+                hidden={isGameRunning}
+                onClick={() => {
+                  setPlayerState({ ...playerState, field: [[], [], []] });
+                  setBotState({ ...botState, field: [[], [], []] });
+                  setDiceState(game.throwDice());
+                  setIsBotMove(Math.random() >= 0.5 ? true : false);
+                  setIsGameRunning(true);
+                }}
+              >
+                New Game
+              </button>
             </div>
           </div>
         </main>
