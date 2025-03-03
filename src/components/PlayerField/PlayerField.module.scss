@@ -7,21 +7,14 @@
   --accent-color: rgb(58, 172, 83);
 
   display: flex;
-  // padding: 5px;
-  // column-gap: 10px;
   column-gap: var(--field-gap);
   width: fit-content;
-  // background-color: aqua;
-  // @include mixins.custom-dashed-border(2px, $full-red, 5px);
   @include mixins.custom-dashed-border(2px, rgb(130, 130, 130), 5px);
 
   .column {
     display: flex;
     flex-direction: column;
-    // padding: 5px;
-    // row-gap: 10px;
     row-gap: var(--field-gap);
-    // background-color: brown;
 
     .square {
       display: flex;
@@ -29,9 +22,12 @@
       align-items: center;
       width: var(--square-size);
       height: var(--square-size);
-      // background-color: blueviolet;
       background-color: rgba(63, 63, 63, 0.755);
     }
+  }
+
+  .reversed {
+    flex-direction: column-reverse;
   }
 
   .interactive:hover {

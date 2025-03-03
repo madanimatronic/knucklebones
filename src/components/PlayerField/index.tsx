@@ -5,16 +5,18 @@ import s from './PlayerField.module.scss';
 
 interface PlayerFieldProps {
   fieldData: number[][];
-  isInteractive: boolean;
+  isInteractive?: boolean;
   availableColumns?: number[];
   columnClickCallback?: (columnIndex: number) => void;
+  isMainPlayer?: boolean;
 }
 
 export const PlayerField: FC<PlayerFieldProps> = ({
   fieldData,
-  isInteractive,
+  isInteractive = false,
   availableColumns,
   columnClickCallback,
+  isMainPlayer = false,
 }) => {
   const handleColumnClick = (evt: MouseEvent<HTMLDivElement>) => {
     if (isInteractive && columnClickCallback) {
@@ -31,7 +33,7 @@ export const PlayerField: FC<PlayerFieldProps> = ({
     return formattedColumn;
   });
   return (
-    <div className={s.field}>
+    <div className={clsx(s.field, { [s.mainPlayer]: isMainPlayer })}>
       {formattedFieldData.map((column, index) => (
         <div
           key={nanoid()}
@@ -45,6 +47,7 @@ export const PlayerField: FC<PlayerFieldProps> = ({
           }
           className={clsx(
             s.column,
+            { [s.reversed]: !isMainPlayer },
             isInteractive &&
               (availableColumns
                 ? availableColumns.includes(index) && s.interactive

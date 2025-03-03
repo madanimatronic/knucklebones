@@ -1,0 +1,29 @@
+@use '../../styles/variables' as *;
+
+.playerWidgets {
+  display: flex;
+  flex-direction: column;
+
+  .stats {
+    text-align: center;
+  }
+
+  .board {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: $gray-600;
+    // min-height: 160px;
+    // min-width: 200px;
+    border: 10px solid $gray-500;
+  }
+
+  .mainPlayer {
+    background-color: rgb(124, 16, 16);
+    border-color: $full-red;
+  }
+}
+
+.reversed {
+  flex-direction: column-reverse;
+}

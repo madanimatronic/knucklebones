@@ -1,7 +1,7 @@
 // Только утилиты, связанные с игрой. Остальные утилиты в src/utils
 
-// Возвращает поле с инвертированными колонками и клетками в колонках.
+// Возвращает поле с инвертированными колонками
 // (не изменяет оригинальное поле)
 export const reverseField = (field: number[][]) => {
-  return field.map((column) => column.toReversed()).toReversed();
+  return field.toReversed();
 };

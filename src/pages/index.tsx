@@ -1,8 +1,10 @@
 import { PlayerField } from '@/components/PlayerField';
+import { PlayerWidgets } from '@/components/PlayerWidgets';
 import { Seo } from '@/components/Seo';
 import { Game, Player } from '@/game/entities/Game';
 import { reverseField } from '@/game/utils/utils';
 import s from '@/styles/Home.module.scss';
+import clsx from 'clsx';
 import { useEffect, useMemo, useState } from 'react';
 
 // TODO: хорошим и современным способом разделить логику и UI
@@ -21,11 +23,6 @@ export default function Home() {
   // TODO: возможно стоит сделать методы Game статическими и тогда
   // не надо будет создавать объект класса
   const game = useMemo(() => new Game(), []);
-  // const test = [
-  //   [],
-  //   [],
-  //   [],
-  // ];
   const [playerState, setPlayerState] = useState(
     new Player(1, 'Super Main Player'),
   );
@@ -47,7 +44,7 @@ export default function Home() {
     // TODO: вынести в функцию это и обработку хода игрока
     if (isBotMove && isGameRunning) {
       // Ход бота (временно, для теста)
-      const updatedFieldsTest = game.pushDiceInColumn(
+      const updatedFields = game.pushDiceInColumn(
         botState,
         game.getAvailableColumns(botState)[
           Math.floor(Math.random() * game.getAvailableColumns(botState).length)
@@ -56,27 +53,20 @@ export default function Home() {
         playerState,
       );
 
-      if (updatedFieldsTest) {
+      if (updatedFields) {
         setPlayerState({
           ...playerState,
-          field: updatedFieldsTest.otherPlayerField,
+          field: updatedFields.otherPlayerField,
         });
         setBotState({
           ...botState,
-          field: updatedFieldsTest.pushPlayerField,
+          field: updatedFields.pushPlayerField,
         });
         setIsBotMove(false);
       }
     }
   }, [playerState.field, botState.field]);
 
-  // Классы скорее всего надо будет переделать, т.к. с react это работает криво
-  // Надо думать...
-  // Возможно стоит написать класс, методы которого будут просто преобразовывать
-  // и возвращать новое состояние игрока (и прочие состояния), которое будет юзать react.
-  // Можно вместо класса просто сделать несколько функций, которые прнимают состояние
-  // игрока/игроков и при необходимости ещё какие-то данные и возвращают новое состояние игрока или игры.
-  // Короче, на входе какие-то данные, на выходе новое состояние какой-либо сущности
   return (
     <>
       <Seo
@@ -86,70 +76,74 @@ export default function Home() {
       />
       <div className={s.page}>
         <main className={s.main}>
-          <p className={s.test}>pizza</p>
-          <button
-            style={{ width: '100px' }}
-            onClick={() => {
-              console.log(Math.floor(Math.random() * 6 + 1));
-            }}
-          >
-            roll
-          </button>
-          <div className={s.gameContainer}>
-            <PlayerField
-              fieldData={reverseField(botState.field)}
-              isInteractive={false}
+          <div className={s.playerWidgetsWrapper}>
+            <PlayerWidgets
+              playerName={playerState.name}
+              playerPoints={game.calculatePlayerPoints(playerState)}
+              diceValue={diceState}
+              isMainPlayer
             />
-            {/* TEST DIV WRAPPER */}
-            <div>
-              <PlayerField
-                fieldData={playerState.field}
-                isInteractive={isGameRunning}
-                availableColumns={game.getAvailableColumns(playerState)}
-                columnClickCallback={(colIndex) => {
-                  const updatedFields = game.pushDiceInColumn(
-                    playerState,
-                    colIndex,
-                    diceState,
-                    botState,
-                  );
+          </div>
+          <div className={s.playerFieldWrapper}>
+            <PlayerField
+              fieldData={playerState.field}
+              isMainPlayer
+              isInteractive={isGameRunning}
+              availableColumns={game.getAvailableColumns(playerState)}
+              columnClickCallback={(colIndex) => {
+                const updatedFields = game.pushDiceInColumn(
+                  playerState,
+                  colIndex,
+                  diceState,
+                  botState,
+                );
 
-                  if (updatedFields) {
-                    setPlayerState({
-                      ...playerState,
-                      field: updatedFields.pushPlayerField,
-                    });
-                    setBotState({
-                      ...botState,
-                      field: updatedFields.otherPlayerField,
-                    });
+                if (updatedFields) {
+                  setPlayerState({
+                    ...playerState,
+                    field: updatedFields.pushPlayerField,
+                  });
+                  setBotState({
+                    ...botState,
+                    field: updatedFields.otherPlayerField,
+                  });
 
-                    setIsBotMove(true);
-                    setDiceState(game.throwDice());
-                  }
-                  console.log(colIndex);
-                }}
-              />
-              <p>{diceState}</p>
-              <p>{game.calculatePlayerPoints(playerState)} points</p>
-              <p>
-                {isGameRunning
-                  ? undefined
-                  : game.calculateGameResult(playerState, botState)}
-              </p>
-              <button
-                hidden={isGameRunning}
-                onClick={() => {
-                  setPlayerState({ ...playerState, field: [[], [], []] });
-                  setBotState({ ...botState, field: [[], [], []] });
+                  setIsBotMove(true);
                   setDiceState(game.throwDice());
-                  setIsBotMove(Math.random() >= 0.5 ? true : false);
-                  setIsGameRunning(true);
-                }}
-              >
-                New Game
-              </button>
-            </div>
+                }
+                console.log(colIndex);
+              }}
+            />
+          </div>
+          <div className={s.gameResultContainer}>
+            <p className={s.message}>
+              {isGameRunning
+                ? undefined
+                : game.calculateGameResult(playerState, botState)}
+            </p>
+            <button
+              className={clsx(s.restartButton, { [s.hidden]: isGameRunning })}
+              inert={isGameRunning}
+              onClick={() => {
+                setPlayerState({ ...playerState, field: [[], [], []] });
+                setBotState({ ...botState, field: [[], [], []] });
+                setDiceState(game.throwDice());
+                setIsBotMove(Math.random() >= 0.5 ? true : false);
+                setIsGameRunning(true);
+              }}
+            >
+              New Game
+            </button>
+          </div>
+          <div className={s.botFieldWrapper}>
+            <PlayerField fieldData={reverseField(botState.field)} />
+          </div>
+          <div className={s.botWidgetsWrapper}>
+            <PlayerWidgets
+              playerName={botState.name}
+              playerPoints={game.calculatePlayerPoints(botState)}
+              diceValue={0}
+            />
           </div>
         </main>
       </div>

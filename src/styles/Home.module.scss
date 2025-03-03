@@ -13,7 +13,7 @@
   // --foreground: $full-white;
 
   display: flex;
-  flex-direction: column;
+  align-items: stretch;
 
   color: $full-white;
   background-color: $full-black;
@@ -23,48 +23,46 @@
 }
 
 .main {
-  display: flex;
-  align-items: flex-start;
   width: 100%;
-  flex-grow: 1;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: 1fr 140px 1fr;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
   @include mixins.custom-dashed-border(2px, $full-red);
 }
 
-.test {
-  display: inline-block;
-  background-color: purple;
+.playerWidgetsWrapper {
+  grid-row: 3;
 }
 
-.gameContainer {
+.playerFieldWrapper {
+  grid-row: 3;
+  grid-column: 2;
+}
+
+.gameResultContainer {
   display: flex;
   flex-direction: column;
-  align-self: stretch;
-  justify-content: space-around;
-  margin: 0 auto;
+  grid-row: 2;
+  grid-column: 2;
+  // Второй вариант - растянуть этот блок:
+  // grid-column: 1 / 4;
+  .message {
+  }
+  .restartButton {
+  }
+  .hidden {
+    visibility: hidden;
+  }
 }
 
-// .field {
-//   margin: 0 auto;
-//   display: flex;
-//   padding: 5px;
-//   column-gap: 10px;
-//   width: fit-content;
-//   background-color: aqua;
+.botFieldWrapper {
+  grid-row: 1;
+  grid-column: 2;
+}
 
-//   .column {
-//     display: flex;
-//     flex-direction: column;
-//     padding: 5px;
-//     row-gap: 10px;
-//     background-color: brown;
-
-//     .square {
-//       display: flex;
-//       justify-content: center;
-//       align-items: center;
-//       width: 30px;
-//       height: 30px;
-//       background-color: blueviolet;
-//     }
-//   }
-// }
+.botWidgetsWrapper {
+  grid-row: 1;
+  grid-column: 3;
+}
