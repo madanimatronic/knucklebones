@@ -7,6 +7,7 @@ interface PlayerWidgetsProps {
   playerPoints: number;
   diceValue: number;
   isMainPlayer?: boolean;
+  className?: string;
 }
 
 export const PlayerWidgets: FC<PlayerWidgetsProps> = ({
@@ -14,9 +15,16 @@ export const PlayerWidgets: FC<PlayerWidgetsProps> = ({
   playerPoints,
   diceValue,
   isMainPlayer = false,
+  className: additionalClassName,
 }) => {
   return (
-    <div className={clsx(s.playerWidgets, { [s.reversed]: !isMainPlayer })}>
+    <div
+      className={clsx(
+        s.playerWidgets,
+        { [s.reversed]: !isMainPlayer },
+        additionalClassName,
+      )}
+    >
       <p className={s.stats}>
         {playerName}
         <br />

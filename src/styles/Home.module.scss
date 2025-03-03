@@ -32,11 +32,11 @@
   @include mixins.custom-dashed-border(2px, $full-red);
 }
 
-.playerWidgetsWrapper {
+.playerWidgets {
   grid-row: 3;
 }
 
-.playerFieldWrapper {
+.playerField {
   grid-row: 3;
   grid-column: 2;
 }
@@ -57,12 +57,12 @@
   }
 }
 
-.botFieldWrapper {
+.botField {
   grid-row: 1;
   grid-column: 2;
 }
 
-.botWidgetsWrapper {
+.botWidgets {
   grid-row: 1;
   grid-column: 3;
 }

@@ -76,45 +76,43 @@ export default function Home() {
       />
       <div className={s.page}>
         <main className={s.main}>
-          <div className={s.playerWidgetsWrapper}>
-            <PlayerWidgets
-              playerName={playerState.name}
-              playerPoints={game.calculatePlayerPoints(playerState)}
-              diceValue={diceState}
-              isMainPlayer
-            />
-          </div>
-          <div className={s.playerFieldWrapper}>
-            <PlayerField
-              fieldData={playerState.field}
-              isMainPlayer
-              isInteractive={isGameRunning}
-              availableColumns={game.getAvailableColumns(playerState)}
-              columnClickCallback={(colIndex) => {
-                const updatedFields = game.pushDiceInColumn(
-                  playerState,
-                  colIndex,
-                  diceState,
-                  botState,
-                );
+          <PlayerWidgets
+            className={s.playerWidgets}
+            playerName={playerState.name}
+            playerPoints={game.calculatePlayerPoints(playerState)}
+            diceValue={diceState}
+            isMainPlayer
+          />
+          <PlayerField
+            className={s.playerField}
+            fieldData={playerState.field}
+            isMainPlayer
+            isInteractive={isGameRunning}
+            availableColumns={game.getAvailableColumns(playerState)}
+            columnClickCallback={(colIndex) => {
+              const updatedFields = game.pushDiceInColumn(
+                playerState,
+                colIndex,
+                diceState,
+                botState,
+              );
 
-                if (updatedFields) {
-                  setPlayerState({
-                    ...playerState,
-                    field: updatedFields.pushPlayerField,
-                  });
-                  setBotState({
-                    ...botState,
-                    field: updatedFields.otherPlayerField,
-                  });
+              if (updatedFields) {
+                setPlayerState({
+                  ...playerState,
+                  field: updatedFields.pushPlayerField,
+                });
+                setBotState({
+                  ...botState,
+                  field: updatedFields.otherPlayerField,
+                });
 
-                  setIsBotMove(true);
-                  setDiceState(game.throwDice());
-                }
-                console.log(colIndex);
-              }}
-            />
-          </div>
+                setIsBotMove(true);
+                setDiceState(game.throwDice());
+              }
+              console.log(colIndex);
+            }}
+          />
           <div className={s.gameResultContainer}>
             <p className={s.message}>
               {isGameRunning
@@ -135,16 +133,16 @@ export default function Home() {
               New Game
             </button>
           </div>
-          <div className={s.botFieldWrapper}>
-            <PlayerField fieldData={reverseField(botState.field)} />
-          </div>
-          <div className={s.botWidgetsWrapper}>
-            <PlayerWidgets
-              playerName={botState.name}
-              playerPoints={game.calculatePlayerPoints(botState)}
-              diceValue={0}
-            />
-          </div>
+          <PlayerField
+            className={s.botField}
+            fieldData={reverseField(botState.field)}
+          />
+          <PlayerWidgets
+            className={s.botWidgets}
+            playerName={botState.name}
+            playerPoints={game.calculatePlayerPoints(botState)}
+            diceValue={0}
+          />
         </main>
       </div>
     </>

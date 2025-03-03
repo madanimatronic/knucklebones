@@ -9,6 +9,7 @@ interface PlayerFieldProps {
   availableColumns?: number[];
   columnClickCallback?: (columnIndex: number) => void;
   isMainPlayer?: boolean;
+  className?: string;
 }
 
 export const PlayerField: FC<PlayerFieldProps> = ({
@@ -17,6 +18,7 @@ export const PlayerField: FC<PlayerFieldProps> = ({
   availableColumns,
   columnClickCallback,
   isMainPlayer = false,
+  className: additionalClassName,
 }) => {
   const handleColumnClick = (evt: MouseEvent<HTMLDivElement>) => {
     if (isInteractive && columnClickCallback) {
@@ -33,7 +35,13 @@ export const PlayerField: FC<PlayerFieldProps> = ({
     return formattedColumn;
   });
   return (
-    <div className={clsx(s.field, { [s.mainPlayer]: isMainPlayer })}>
+    <div
+      className={clsx(
+        s.field,
+        { [s.mainPlayer]: isMainPlayer },
+        additionalClassName,
+      )}
+    >
       {formattedFieldData.map((column, index) => (
         <div
           key={nanoid()}
