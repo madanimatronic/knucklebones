@@ -1,7 +1,8 @@
 import { PlayerField } from '@/components/PlayerField';
 import { PlayerWidgets } from '@/components/PlayerWidgets';
 import { Seo } from '@/components/Seo';
-import { Game, Player } from '@/game/entities/Game';
+import { Game } from '@/game/entities/Game';
+import { Player } from '@/game/entities/Player';
 import { reverseField } from '@/game/utils/utils';
 import s from '@/styles/Home.module.scss';
 import clsx from 'clsx';

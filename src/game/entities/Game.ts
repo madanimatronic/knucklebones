@@ -1,17 +1,19 @@
-// TEMP!!!
-// Временное сохранение очень плохой реализации knucklebones
-
-export interface IPlayer {
-  id: number;
-  name: string;
-  field: number[][];
-}
+import { IPlayer } from './Player';
 
 export interface IGame {
-  getAvailableColumns: (player: IPlayer) => number[]; // Возвращает индексы доступных колонок
-  isRunning: () => boolean; // Проверка продолжительности игры
+  // Возвращает индексы доступных колонок
+  getAvailableColumns: (player: IPlayer) => number[];
+  // Проверка продолжительности игры
+  isRunning: (...players: IPlayer[]) => boolean;
+  // Возвращает массив, где каждый элемент - это кол-во повторений
+  // элемента на том же месте в исходной колонке (null для пустых клеток)
+  calculateColumnDuplicates: (column: (number | null)[]) => number[];
+  // Аналогично calculateColumnDuplicates, но возвращает поле повторений
+  calculateFieldDuplicates: (field: (number | null)[][]) => number[][];
+  calculateColumnPoints: (column: number[]) => number;
   calculatePlayerPoints: (player: IPlayer) => number;
-  calculateGameResult: () => string; // Подсчёт результата игры
+  // Подсчёт результата игры
+  calculateGameResult: (...players: IPlayer[]) => string;
   throwDice: () => number;
   // Возвращает новые поля игроков или undefined при ошибке
   pushDiceInColumn: (
@@ -25,17 +27,6 @@ export interface IGame {
         otherPlayerField: number[][];
       }
     | undefined;
-}
-
-export class Player implements IPlayer {
-  id: number;
-  name: string;
-  field: number[][] = [[], [], []];
-
-  constructor(userId: number, userName: string) {
-    this.id = userId;
-    this.name = userName;
-  }
 }
 
 export class Game implements IGame {
@@ -54,10 +45,54 @@ export class Game implements IGame {
     return true;
   }
 
+  calculateColumnDuplicates(column: (number | null)[]): number[] {
+    const duplicates = new Map<number | null, number>();
+    column.forEach((value) => {
+      duplicates.set(value, (duplicates.get(value) || 0) + 1);
+    });
+    return column.map((value) => duplicates.get(value)!);
+  }
+
+  calculateFieldDuplicates(field: (number | null)[][]): number[][] {
+    return field.map((column) => this.calculateColumnDuplicates(column));
+  }
+
+  calculateColumnPoints(column: number[]): number {
+    let points = 0;
+    // Каждому элементу в колонке соответствует значение из duplicates,
+    // означающее сколько раз этот элемент встречается в колонке
+    const duplicates = this.calculateColumnDuplicates(column);
+    // Счётчик повторений
+    let duplicatesCount = 0;
+
+    // Проходим по массиву duplicates и высчитываем очки
+    // в соответствии с количеством повторений данного элемента в колонке
+    for (let i = 0; i < duplicates.length; i++) {
+      // Счётчик повторений не может быть больше, чем самих элементов
+      // в колонке
+      if (duplicatesCount + duplicates[i] <= column.length) {
+        duplicatesCount += duplicates[i];
+        switch (duplicates[i]) {
+          case 1:
+            points += column[i];
+            break;
+          case 2:
+            points += column[i] * 4;
+            break;
+          case 3:
+            points += column[i] * 9;
+            break;
+        }
+      }
+      if (duplicatesCount === column.length) break;
+    }
+
+    return points;
+  }
+
   calculatePlayerPoints(player: IPlayer): number {
     return player.field.reduce(
-      (fieldSum, column) =>
-        fieldSum + column.reduce((columnSum, value) => columnSum + value, 0),
+      (accum, column) => accum + this.calculateColumnPoints(column),
       0,
     );
   }

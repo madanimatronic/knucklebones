@@ -12,6 +12,9 @@ interface PlayerFieldProps {
   className?: string;
 }
 
+// TODO: цвета можно сделать через calculateFieldDuplicates
+// например, если элементу соответствует 2 из calculateFieldDuplicates, то
+// значит, что он повторяется дважды и присваиваем ему класс с синим цветом
 export const PlayerField: FC<PlayerFieldProps> = ({
   fieldData,
   isInteractive = false,
@@ -26,7 +29,7 @@ export const PlayerField: FC<PlayerFieldProps> = ({
       columnClickCallback(Number(target.id));
     }
   };
-  // Форматированные данные для рендера
+  // Форматированные данные для рендера (TODO: можно вынести в функцию)
   const formattedFieldData = fieldData.map((column) => {
     const formattedColumn = [];
     for (let i = 0; i < fieldData.length; i++) {
