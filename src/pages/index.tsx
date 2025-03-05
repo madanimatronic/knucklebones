@@ -87,6 +87,12 @@ export default function Home() {
           <PlayerField
             className={s.playerField}
             fieldData={playerState.field}
+            calculateColumnPointsFunction={game.calculateColumnPoints.bind(
+              game,
+            )}
+            calculateFieldDuplicatesFunction={game.calculateFieldDuplicates.bind(
+              game,
+            )}
             isMainPlayer
             isInteractive={isGameRunning}
             availableColumns={game.getAvailableColumns(playerState)}
@@ -137,6 +143,12 @@ export default function Home() {
           <PlayerField
             className={s.botField}
             fieldData={reverseField(botState.field)}
+            calculateColumnPointsFunction={game.calculateColumnPoints.bind(
+              game,
+            )}
+            calculateFieldDuplicatesFunction={game.calculateFieldDuplicates.bind(
+              game,
+            )}
           />
           <PlayerWidgets
             className={s.botWidgets}

@@ -5,6 +5,8 @@ import s from './PlayerField.module.scss';
 
 interface PlayerFieldProps {
   fieldData: number[][];
+  calculateColumnPointsFunction: (column: number[]) => number;
+  calculateFieldDuplicatesFunction: (field: (number | null)[][]) => number[][];
   isInteractive?: boolean;
   availableColumns?: number[];
   columnClickCallback?: (columnIndex: number) => void;
@@ -17,18 +19,26 @@ interface PlayerFieldProps {
 // значит, что он повторяется дважды и присваиваем ему класс с синим цветом
 export const PlayerField: FC<PlayerFieldProps> = ({
   fieldData,
+  calculateColumnPointsFunction,
+  calculateFieldDuplicatesFunction,
   isInteractive = false,
   availableColumns,
   columnClickCallback,
   isMainPlayer = false,
   className: additionalClassName,
 }) => {
+  // TODO: сделать оптимизацию объявлений функций и подсчётов (useMemo и т.д.)
   const handleColumnClick = (evt: MouseEvent<HTMLDivElement>) => {
     if (isInteractive && columnClickCallback) {
       const target = evt.currentTarget as HTMLDivElement;
       columnClickCallback(Number(target.id));
     }
   };
+  const columnPoints = fieldData.map((column) =>
+    calculateColumnPointsFunction(column),
+  );
+  // Каждый элемент в колонке - это кол-во повторений этого же элемента в колонке исходного поля
+  const fieldDuplications = calculateFieldDuplicatesFunction(fieldData);
   // Форматированные данные для рендера (TODO: можно вынести в функцию)
   const formattedFieldData = fieldData.map((column) => {
     const formattedColumn = [];
@@ -45,13 +55,22 @@ export const PlayerField: FC<PlayerFieldProps> = ({
         additionalClassName,
       )}
     >
-      {formattedFieldData.map((column, index) => (
+      <div
+        className={clsx(s.columnPointsContainer, { [s.upper]: isMainPlayer })}
+      >
+        {columnPoints.map((value) => (
+          <div key={nanoid()} className={s.value}>
+            {value}
+          </div>
+        ))}
+      </div>
+      {formattedFieldData.map((column, colIndex) => (
         <div
           key={nanoid()}
-          id={isInteractive ? String(index) : undefined}
+          id={isInteractive ? String(colIndex) : undefined}
           onClick={
             availableColumns
-              ? availableColumns.includes(index)
+              ? availableColumns.includes(colIndex)
                 ? handleColumnClick
                 : undefined
               : handleColumnClick
@@ -61,14 +80,23 @@ export const PlayerField: FC<PlayerFieldProps> = ({
             { [s.reversed]: !isMainPlayer },
             isInteractive &&
               (availableColumns
-                ? availableColumns.includes(index) && s.interactive
+                ? availableColumns.includes(colIndex) && s.interactive
                 : s.interactive),
           )}
         >
-          {column.map((value) =>
+          {column.map((value, squareIndex) =>
             value !== null ? (
               <div key={nanoid()} className={s.square}>
-                {value}
+                <p
+                  className={clsx({
+                    [s.testDouble]:
+                      fieldDuplications[colIndex][squareIndex] === 2,
+                    [s.testTriple]:
+                      fieldDuplications[colIndex][squareIndex] === 3,
+                  })}
+                >
+                  {value}
+                </p>
               </div>
             ) : (
               <div key={nanoid()} className={s.square}></div>
