@@ -7,7 +7,7 @@ import s from './Dice.module.scss';
 // Значение - массив точек
 // Каждой точке соответствует строка и колонка
 // в grid (для grid-row, grid-column)
-export const diceGridPatterns: Record<number, number[][]> = {
+const diceGridPatterns: Record<number, number[][]> = {
   1: [[2, 2]],
   2: [
     [1, 3],
