@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import { nanoid } from 'nanoid';
 import { FC, MouseEvent } from 'react';
+import { Dice } from '../Dice';
 import s from './PlayerField.module.scss';
 
 interface PlayerFieldProps {
@@ -87,16 +88,13 @@ export const PlayerField: FC<PlayerFieldProps> = ({
           {column.map((value, squareIndex) =>
             value !== null ? (
               <div key={nanoid()} className={s.square}>
-                <p
+                <Dice
                   className={clsx({
-                    [s.testDouble]:
-                      fieldDuplications[colIndex][squareIndex] === 2,
-                    [s.testTriple]:
-                      fieldDuplications[colIndex][squareIndex] === 3,
+                    [s.double]: fieldDuplications[colIndex][squareIndex] === 2,
+                    [s.triple]: fieldDuplications[colIndex][squareIndex] === 3,
                   })}
-                >
-                  {value}
-                </p>
+                  value={value}
+                />
               </div>
             ) : (
               <div key={nanoid()} className={s.square}></div>

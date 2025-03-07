@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import { FC } from 'react';
+import { Dice } from '../Dice';
 import s from './PlayerWidgets.module.scss';
 
 interface PlayerWidgetsProps {
@@ -31,7 +32,7 @@ export const PlayerWidgets: FC<PlayerWidgetsProps> = ({
         {playerPoints}
       </p>
       <div className={clsx(s.board, { [s.mainPlayer]: isMainPlayer })}>
-        {diceValue}
+        <Dice value={diceValue} />
       </div>
     </div>
   );

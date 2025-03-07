@@ -45,11 +45,13 @@ interface DiceProps {
   // От 1 до 6 вкл.
   value: number;
   className?: string;
+  debugMode?: boolean;
 }
 
 export const Dice: FC<DiceProps> = ({
   value,
   className: additionalClassName,
+  debugMode = false,
 }) => {
   if (value < 1 || value > 6) {
     console.error(
@@ -71,5 +73,9 @@ export const Dice: FC<DiceProps> = ({
       />,
     );
   }
-  return <div className={clsx(s.dice, additionalClassName)}>{dots}</div>;
+  return (
+    <div className={clsx(s.dice, additionalClassName)}>
+      {debugMode ? <p style={{ color: 'black' }}>{value}</p> : dots}
+    </div>
+  );
 };

@@ -1,4 +1,3 @@
-import { Dice } from '@/components/Dice';
 import { PlayerField } from '@/components/PlayerField';
 import { PlayerWidgets } from '@/components/PlayerWidgets';
 import { Seo } from '@/components/Seo';
@@ -15,6 +14,8 @@ import { useEffect, useMemo, useState } from 'react';
 // TODO: не забыть про подсчёт очков в колонках и увеличении очков
 // при комбинациях кубиков
 
+// TODO: пройти по всем файлам стилей и вынести цвета в константы
+// TODO: переписать README
 export default function Home() {
   const test = [
     [1, 2, 3],
@@ -78,7 +79,6 @@ export default function Home() {
       />
       <div className={s.page}>
         <main className={s.main}>
-          <Dice value={diceState} />
           <PlayerWidgets
             className={s.playerWidgets}
             playerName={playerState.name}
@@ -156,7 +156,7 @@ export default function Home() {
             className={s.botWidgets}
             playerName={botState.name}
             playerPoints={game.calculatePlayerPoints(botState)}
-            diceValue={0}
+            diceValue={1}
           />
         </main>
       </div>
