@@ -1,3 +1,4 @@
+import { Dice } from '@/components/Dice';
 import { PlayerField } from '@/components/PlayerField';
 import { PlayerWidgets } from '@/components/PlayerWidgets';
 import { Seo } from '@/components/Seo';
@@ -77,6 +78,7 @@ export default function Home() {
       />
       <div className={s.page}>
         <main className={s.main}>
+          <Dice value={diceState} />
           <PlayerWidgets
             className={s.playerWidgets}
             playerName={playerState.name}
