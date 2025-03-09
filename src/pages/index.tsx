@@ -16,13 +16,11 @@ import { useEffect, useMemo, useState } from 'react';
 
 // TODO: пройти по всем файлам стилей и вынести цвета в константы
 // TODO: переписать README
-export default function Home() {
-  const test = [
-    [1, 2, 3],
-    [6, 4, 2],
-    [3, 6, 1],
-  ];
 
+// Задержка хода бота в МС
+const botDelay = 1000;
+
+export default function Home() {
   // TODO: возможно стоит сделать методы Game статическими и тогда
   // не надо будет создавать объект класса
   const game = useMemo(() => new Game(), []);
@@ -42,31 +40,39 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const isGameRunning = game.isRunning(playerState, botState);
-    setIsGameRunning(isGameRunning);
+    const newIsGameRunningState = game.isRunning(playerState, botState);
+    setIsGameRunning(newIsGameRunningState);
     // TODO: вынести в функцию это и обработку хода игрока
-    if (isBotMove && isGameRunning) {
+    if (isBotMove && newIsGameRunningState) {
       // Ход бота (временно, для теста)
-      const updatedFields = game.pushDiceInColumn(
-        botState,
-        game.getAvailableColumns(botState)[
-          Math.floor(Math.random() * game.getAvailableColumns(botState).length)
-        ],
-        game.throwDice(),
-        playerState,
-      );
+      const newDiceState = game.throwDice();
+      setDiceState(newDiceState);
+      setTimeout(() => {
+        const updatedFields = game.pushDiceInColumn(
+          botState,
+          game.getAvailableColumns(botState)[
+            Math.floor(
+              Math.random() * game.getAvailableColumns(botState).length,
+            )
+          ],
+          newDiceState,
+          playerState,
+        );
 
-      if (updatedFields) {
-        setPlayerState({
-          ...playerState,
-          field: updatedFields.otherPlayerField,
-        });
-        setBotState({
-          ...botState,
-          field: updatedFields.pushPlayerField,
-        });
-        setIsBotMove(false);
-      }
+        if (updatedFields) {
+          setPlayerState({
+            ...playerState,
+            field: updatedFields.otherPlayerField,
+          });
+          setBotState({
+            ...botState,
+            field: updatedFields.pushPlayerField,
+          });
+          setIsBotMove(false);
+        }
+
+        setDiceState(game.throwDice());
+      }, botDelay);
     }
   }, [playerState.field, botState.field]);
 
@@ -80,10 +86,11 @@ export default function Home() {
       <div className={s.page}>
         <main className={s.main}>
           <PlayerWidgets
-            className={s.playerWidgets}
+            className={clsx(s.widgets, s.playerWidgets)}
             playerName={playerState.name}
             playerPoints={game.calculatePlayerPoints(playerState)}
             diceValue={diceState}
+            isDiceHidden={!isGameRunning || isBotMove}
             isMainPlayer
           />
           <PlayerField
@@ -96,7 +103,7 @@ export default function Home() {
               game,
             )}
             isMainPlayer
-            isInteractive={isGameRunning}
+            isInteractive={isGameRunning && !isBotMove}
             availableColumns={game.getAvailableColumns(playerState)}
             columnClickCallback={(colIndex) => {
               const updatedFields = game.pushDiceInColumn(
@@ -153,10 +160,11 @@ export default function Home() {
             )}
           />
           <PlayerWidgets
-            className={s.botWidgets}
+            className={clsx(s.widgets, s.botWidgets)}
             playerName={botState.name}
             playerPoints={game.calculatePlayerPoints(botState)}
-            diceValue={1}
+            diceValue={diceState}
+            isDiceHidden={!isGameRunning || !isBotMove}
           />
         </main>
       </div>

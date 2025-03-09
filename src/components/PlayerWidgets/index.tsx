@@ -9,6 +9,7 @@ interface PlayerWidgetsProps {
   diceValue: number;
   isMainPlayer?: boolean;
   className?: string;
+  isDiceHidden?: boolean;
 }
 
 export const PlayerWidgets: FC<PlayerWidgetsProps> = ({
@@ -17,6 +18,7 @@ export const PlayerWidgets: FC<PlayerWidgetsProps> = ({
   diceValue,
   isMainPlayer = false,
   className: additionalClassName,
+  isDiceHidden = false,
 }) => {
   return (
     <div
@@ -32,7 +34,10 @@ export const PlayerWidgets: FC<PlayerWidgetsProps> = ({
         {playerPoints}
       </p>
       <div className={clsx(s.board, { [s.mainPlayer]: isMainPlayer })}>
-        <Dice value={diceValue} />
+        <Dice
+          className={clsx({ [s.hidden]: isDiceHidden })}
+          value={diceValue}
+        />
       </div>
     </div>
   );
