@@ -2,11 +2,11 @@ import { PlayerField } from '@/components/PlayerField';
 import { PlayerWidgets } from '@/components/PlayerWidgets';
 import { Seo } from '@/components/Seo';
 import { Game } from '@/game/entities/Game';
-import { Player } from '@/game/entities/Player';
+import { IPlayer, Player } from '@/game/entities/Player';
 import { reverseField } from '@/game/utils/utils';
 import s from '@/styles/Home.module.scss';
 import clsx from 'clsx';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 // TODO: хорошим и современным способом разделить логику и UI
 // В компонентах и не только - это вынести логику в кастомный хук (если будет нужно)
@@ -25,7 +25,7 @@ export default function Home() {
   // не надо будет создавать объект класса
   const game = useMemo(() => new Game(), []);
   const [playerState, setPlayerState] = useState(
-    new Player(1, 'Super Main Player'),
+    new Player(1, 'Super Main Player', true),
   );
   const [botState, setBotState] = useState(new Player(2, 'Bot1'));
 
@@ -35,46 +35,73 @@ export default function Home() {
 
   const [isGameRunning, setIsGameRunning] = useState(true);
 
+  // Добавляет кубик в колонку активного игрока и обновляет поля игроков
+  // Также переключает ход, определяет новое состояние игры и кидает кубик
+  // для хода другого игрока
+  const handlePlayerMove = useCallback(
+    (
+      activePlayerState: IPlayer,
+      columnIndex: number,
+      otherPlayerState: IPlayer,
+    ) => {
+      const updatedFields = game.pushDiceInColumn(
+        activePlayerState,
+        columnIndex,
+        diceState,
+        otherPlayerState,
+      );
+
+      if (updatedFields) {
+        const newPlayerState = {
+          ...playerState,
+          field: activePlayerState.isControllable
+            ? updatedFields.pushPlayerField
+            : updatedFields.otherPlayerField,
+        };
+        const newBotState = {
+          ...botState,
+          field: activePlayerState.isControllable
+            ? updatedFields.otherPlayerField
+            : updatedFields.pushPlayerField,
+        };
+        setPlayerState(newPlayerState);
+        setBotState(newBotState);
+
+        setIsBotMove(activePlayerState.isControllable);
+
+        const newIsGameRunningState = game.isRunning(
+          newPlayerState,
+          newBotState,
+        );
+        setIsGameRunning(newIsGameRunningState);
+
+        setDiceState(game.throwDice());
+      }
+    },
+    [game, playerState, botState, diceState],
+  );
+
   useEffect(() => {
     setDiceState(game.throwDice());
+    setIsBotMove(Math.random() >= 0.5);
   }, []);
 
   useEffect(() => {
-    const newIsGameRunningState = game.isRunning(playerState, botState);
-    setIsGameRunning(newIsGameRunningState);
-    // TODO: вынести в функцию это и обработку хода игрока
-    if (isBotMove && newIsGameRunningState) {
-      // Ход бота (временно, для теста)
-      const newDiceState = game.throwDice();
-      setDiceState(newDiceState);
+    // Логика хода бота
+    if (isBotMove && isGameRunning) {
       setTimeout(() => {
-        const updatedFields = game.pushDiceInColumn(
+        handlePlayerMove(
           botState,
           game.getAvailableColumns(botState)[
             Math.floor(
               Math.random() * game.getAvailableColumns(botState).length,
             )
           ],
-          newDiceState,
           playerState,
         );
-
-        if (updatedFields) {
-          setPlayerState({
-            ...playerState,
-            field: updatedFields.otherPlayerField,
-          });
-          setBotState({
-            ...botState,
-            field: updatedFields.pushPlayerField,
-          });
-          setIsBotMove(false);
-        }
-
-        setDiceState(game.throwDice());
       }, botDelay);
     }
-  }, [playerState.field, botState.field]);
+  }, [isBotMove, isGameRunning]);
 
   return (
     <>
@@ -106,26 +133,7 @@ export default function Home() {
             isInteractive={isGameRunning && !isBotMove}
             availableColumns={game.getAvailableColumns(playerState)}
             columnClickCallback={(colIndex) => {
-              const updatedFields = game.pushDiceInColumn(
-                playerState,
-                colIndex,
-                diceState,
-                botState,
-              );
-
-              if (updatedFields) {
-                setPlayerState({
-                  ...playerState,
-                  field: updatedFields.pushPlayerField,
-                });
-                setBotState({
-                  ...botState,
-                  field: updatedFields.otherPlayerField,
-                });
-
-                setIsBotMove(true);
-                setDiceState(game.throwDice());
-              }
+              handlePlayerMove(playerState, colIndex, botState);
               console.log(colIndex);
             }}
           />
@@ -142,7 +150,7 @@ export default function Home() {
                 setPlayerState({ ...playerState, field: [[], [], []] });
                 setBotState({ ...botState, field: [[], [], []] });
                 setDiceState(game.throwDice());
-                setIsBotMove(Math.random() >= 0.5 ? true : false);
+                setIsBotMove(Math.random() >= 0.5);
                 setIsGameRunning(true);
               }}
             >
