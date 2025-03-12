@@ -18,7 +18,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 // TODO: переписать README
 
 // Задержка хода бота в МС
-const botDelay = 1000;
+const botDelay = 100;
 
 export default function Home() {
   // TODO: возможно стоит сделать методы Game статическими и тогда

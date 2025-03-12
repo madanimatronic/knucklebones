@@ -1,26 +1,46 @@
 @use '../../styles/variables' as *;
 
 .playerWidgets {
+  --box-shadow-offset: 20px;
+  --border-size: 20px;
+
   display: flex;
   flex-direction: column;
 
   .stats {
     text-align: center;
+    // Для выравнивания шрифта
+    // padding-top: calc(18px + var(--box-shadow-offset));
+    padding-top: 18px;
   }
 
   .board {
+    --shadow-color: #5b5b5b;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: $gray-600;
+    background-color: #5e5e5e;
     // min-height: 160px;
     // min-width: 200px;
-    border: 10px solid $gray-500;
+    // flex-grow: 1;
+    // align-self: stretch;
+    border: var(--border-size) solid #8a8a8a;
+    box-shadow: 0px var(--box-shadow-offset) var(--shadow-color);
+    margin-bottom: var(--box-shadow-offset);
+
+    // Test
+    // align-self: center;
+    // max-width: 310px;
+    // max-height: 200px;
+    // width: 100%;
+    // height: 100%;
+    // Test
   }
 
   .mainPlayer {
-    background-color: rgb(124, 16, 16);
-    border-color: $full-red;
+    --shadow-color: #6d140c;
+    background-color: #74150c;
+    border-color: #cc1b06;
   }
 }
 
