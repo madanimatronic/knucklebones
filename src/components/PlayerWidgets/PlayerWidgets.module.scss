@@ -1,4 +1,5 @@
 @use '../../styles/variables' as *;
+@use '../../styles/mixins' as mixins;
 
 .playerWidgets {
   --box-shadow-offset: 20px;
@@ -6,42 +7,42 @@
 
   display: flex;
   flex-direction: column;
+  align-items: center;
 
-  .stats {
-    text-align: center;
-    // Для выравнивания шрифта
-    // padding-top: calc(18px + var(--box-shadow-offset));
-    padding-top: 18px;
+  max-width: 310px;
+  max-height: 315px;
+  width: 100%;
+  height: 100%;
+}
+
+.stats {
+  text-align: center;
+  // Для выравнивания шрифта
+  padding-top: 18px;
+}
+
+.board {
+  --shadow-color: #5b5b5b;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #5e5e5e;
+  max-height: 190px;
+  height: 100%;
+  align-self: stretch;
+  border: var(--border-size) solid #8a8a8a;
+  box-shadow: 0px var(--box-shadow-offset) var(--shadow-color);
+  margin-bottom: var(--box-shadow-offset);
+
+  @include mixins.responsive('lg') {
+    border-width: 15px;
   }
+}
 
-  .board {
-    --shadow-color: #5b5b5b;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #5e5e5e;
-    // min-height: 160px;
-    // min-width: 200px;
-    // flex-grow: 1;
-    // align-self: stretch;
-    border: var(--border-size) solid #8a8a8a;
-    box-shadow: 0px var(--box-shadow-offset) var(--shadow-color);
-    margin-bottom: var(--box-shadow-offset);
-
-    // Test
-    // align-self: center;
-    // max-width: 310px;
-    // max-height: 200px;
-    // width: 100%;
-    // height: 100%;
-    // Test
-  }
-
-  .mainPlayer {
-    --shadow-color: #6d140c;
-    background-color: #74150c;
-    border-color: #cc1b06;
-  }
+.mainPlayer {
+  --shadow-color: #6d140c;
+  background-color: #74150c;
+  border-color: #cc1b06;
 }
 
 .reversed {
@@ -51,3 +52,15 @@
 .hidden {
   visibility: hidden;
 }
+
+// @include mixins.tablet {
+//   .board {
+//     background-color: aqua;
+//   }
+// }
+// @media (max-width: $screen-md) {
+//   .playerWidgets {
+//     --box-shadow-offset: 15px;
+//     --border-size: 15px;
+//   }
+// }

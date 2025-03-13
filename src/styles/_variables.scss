@@ -54,3 +54,11 @@ $screen-xl: 1280px;
 $screen-xl_2: 1440px;
 $screen-xl_3: 1600px;
 $screen-xl_4: 1920px;
+
+$breakpoints: (
+  'xxs': 'max-width: #{$screen-xxs}',
+  'xs': 'max-width: #{$screen-xs}',
+  'sm': 'max-width: #{$screen-sm}',
+  'md': 'max-width: #{$screen-md}',
+  'lg': 'max-width: #{$screen-lg}',
+);

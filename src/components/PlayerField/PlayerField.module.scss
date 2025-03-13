@@ -5,27 +5,14 @@
   --square-size: 90px;
   --field-gap: 16px;
   --accent-color: rgb(58, 172, 83);
+  --points-container-cover-margin: calc(0.35 * var(--square-size) + 0.36em);
 
   position: relative;
   display: flex;
   column-gap: var(--field-gap);
   width: fit-content;
+  margin-bottom: var(--points-container-cover-margin);
   @include mixins.custom-dashed-border(2px, rgb(130, 130, 130), 5px);
-
-  .column {
-    display: flex;
-    flex-direction: column;
-    row-gap: var(--field-gap);
-
-    .square {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: var(--square-size);
-      height: var(--square-size);
-      background-color: rgba(63, 63, 63, 0.755);
-    }
-  }
 
   .reversed {
     flex-direction: column-reverse;
@@ -35,6 +22,21 @@
     background-color: yellowgreen;
     cursor: pointer;
   }
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  row-gap: var(--field-gap);
+}
+
+.square {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: var(--square-size);
+  height: var(--square-size);
+  background-color: rgba(63, 63, 63, 0.755);
 }
 
 .columnPointsContainer {
@@ -74,4 +76,6 @@
 // Класс для главного ирока. Выделяет его интерфейс
 .mainPlayer {
   @include mixins.custom-dashed-border(2px, $full-red, 5px);
+  margin-bottom: 0;
+  margin-top: var(--points-container-cover-margin);
 }
