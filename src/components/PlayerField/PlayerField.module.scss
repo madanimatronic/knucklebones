@@ -14,6 +14,25 @@
   margin-bottom: var(--points-container-cover-margin);
   @include mixins.custom-dashed-border(2px, rgb(130, 130, 130), 5px);
 
+  // Адаптив для Dice и для PlayerField задан
+  // отдельно друг от друга, что не совсем хорошо
+  // Лучше было бы как-то привязать размер клеток поля
+  // к размеру кубика, который помещается в это поле, но пока
+  // не совсем очевидно как это сделать
+  // Также можно вынести карту размеров кубика и поля в переменную или
+  // вынести размеры кубика в переменные, импортировать их
+  // и высчитывать по ним размер клетки поля
+
+  @include mixins.responsive('lg') {
+    --square-size: 80px;
+    --field-gap: 12px;
+  }
+
+  @include mixins.responsive('md') {
+    --square-size: 70px;
+    --field-gap: 10px;
+  }
+
   .reversed {
     flex-direction: column-reverse;
   }
