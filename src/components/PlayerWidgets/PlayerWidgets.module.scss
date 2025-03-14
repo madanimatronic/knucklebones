@@ -18,7 +18,7 @@
     --border-size: 15px;
   }
 
-  @include mixins.responsive('md') {
+  @include mixins.responsive('sm') {
     --border-size: 10px;
   }
 }
@@ -43,6 +43,10 @@
   border: var(--border-size) solid #8a8a8a;
   box-shadow: 0px var(--box-shadow-offset) var(--shadow-color);
   margin-bottom: var(--box-shadow-offset);
+
+  @include mixins.responsive('sm') {
+    height: auto;
+  }
 }
 
 .mainPlayer {

@@ -6,6 +6,7 @@ import { IPlayer, Player } from '@/game/entities/Player';
 import { reverseField } from '@/game/utils/utils';
 import s from '@/styles/Home.module.scss';
 import clsx from 'clsx';
+import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 // TODO: хорошим и современным способом разделить логику и UI
@@ -34,6 +35,10 @@ export default function Home() {
   const [isBotMove, setIsBotMove] = useState(false);
 
   const [isGameRunning, setIsGameRunning] = useState(true);
+
+  // TODO: подумать как побороть моргание экрана при загрузке страницы
+  // (или можно сделать лоадер при загрузке страницы)
+  const [isDarkMode, setIsDarkMode] = useState(true);
 
   // Добавляет кубик в колонку активного игрока и обновляет поля игроков
   // Также переключает ход, определяет новое состояние игры и кидает кубик
@@ -84,6 +89,22 @@ export default function Home() {
   useEffect(() => {
     setDiceState(game.throwDice());
     setIsBotMove(Math.random() >= 0.5);
+    // console.log(window.matchMedia('(prefers-color-scheme: light)'));
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: light)');
+
+    const handleChange = (evt: MediaQueryListEvent) =>
+      setIsDarkMode(!evt.matches);
+
+    if (mediaQuery.matches) {
+      setIsDarkMode(false);
+    }
+    // Срабатывает когда пользователь меняет предпочтение темы без перезагрузки
+    mediaQuery.addEventListener('change', handleChange);
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleChange);
+    };
   }, []);
 
   useEffect(() => {
@@ -110,10 +131,21 @@ export default function Home() {
         metaDescription='some description'
         iconLink='/favicon.ico'
       />
-      <div className={s.page}>
+      <div className={clsx(s.page, isDarkMode ? s.dark : s.light)}>
         <main className={s.main}>
+          {/* TODO: Обернуть Image в кнопку для доступности и 
+          стилизовать обводку при выборе через tab */}
+          <Image
+            className={s.themeButton}
+            src={isDarkMode ? '/light-mode.svg' : '/dark-mode.svg'}
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            alt='theme-mode button'
+            width={50}
+            height={50}
+            priority
+          />
           <PlayerWidgets
-            className={clsx(s.widgets, s.playerWidgets)}
+            className={s.playerWidgets}
             playerName={playerState.name}
             playerPoints={game.calculatePlayerPoints(playerState)}
             diceValue={diceState}
@@ -168,7 +200,7 @@ export default function Home() {
             )}
           />
           <PlayerWidgets
-            className={clsx(s.widgets, s.botWidgets)}
+            className={s.botWidgets}
             playerName={botState.name}
             playerPoints={game.calculatePlayerPoints(botState)}
             diceValue={diceState}

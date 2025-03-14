@@ -19,7 +19,7 @@
     --dice-size: 70px;
   }
 
-  @include mixins.responsive('md') {
+  @include mixins.responsive('sm') {
     --dice-size: 60px;
   }
 }
