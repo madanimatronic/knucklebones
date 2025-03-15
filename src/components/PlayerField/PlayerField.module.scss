@@ -33,6 +33,11 @@
     --field-gap: 10px;
   }
 
+  @include mixins.responsive('lg-height') {
+    --square-size: 70px;
+    --field-gap: 10px;
+  }
+
   .reversed {
     flex-direction: column-reverse;
   }

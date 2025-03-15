@@ -17,6 +17,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 // TODO: пройти по всем файлам стилей и вынести цвета в константы
 // TODO: переписать README
+// TODO: проверить страницу на скролл при разных разрешениях экрана
 
 // Задержка хода бота в МС
 const botDelay = 100;

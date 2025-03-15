@@ -22,6 +22,10 @@
   @include mixins.responsive('sm') {
     --dice-size: 60px;
   }
+
+  @include mixins.responsive('lg-height') {
+    --dice-size: 60px;
+  }
 }
 
 .dot {

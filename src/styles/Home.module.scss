@@ -40,6 +40,11 @@
     padding: 10px;
     font-size: 24px;
   }
+
+  @include mixins.responsive('lg-height') {
+    padding: 10px;
+    font-size: 24px;
+  }
 }
 
 .dark {
@@ -84,6 +89,14 @@
 
   @include mixins.responsive('sm') {
     grid-template-rows: 1fr 130px 1fr;
+  }
+
+  @include mixins.responsive('lg-height') {
+    grid-template-rows: 1fr 130px 1fr;
+  }
+
+  @include mixins.responsive('md-height') {
+    grid-template-rows: 1fr 120px 1fr;
   }
 }
 
@@ -138,6 +151,7 @@
     height: 58px;
     font-size: inherit;
     border: 3px solid $full-black;
+    color: $full-black;
     background-color: #c23d3d;
     text-align: center;
     padding: 0px 24px;
@@ -147,6 +161,10 @@
     }
 
     @include mixins.responsive('md') {
+      height: 46px;
+    }
+
+    @include mixins.responsive('lg-height') {
       height: 46px;
     }
 
