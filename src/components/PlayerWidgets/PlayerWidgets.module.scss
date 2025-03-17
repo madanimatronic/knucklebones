@@ -27,12 +27,21 @@
   text-align: center;
   // Для выравнивания шрифта
   padding-top: 18px;
+
+  @include mixins.responsive('lg') {
+    padding-top: 16px;
+  }
+
+  @include mixins.responsive('md') {
+    padding-top: 12px;
+  }
+
+  @include mixins.responsive('lg-height') {
+    padding-top: 12px;
+  }
 }
 
-// TODO: для красоты можно добавить соотношение сторон,
-// чтобы при сжатии у доски сохранялись какие-то пропорции
 .board {
-  // --shadow-color: #5b5b5b;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -41,7 +50,6 @@
   height: 100%;
   align-self: stretch;
   border: var(--border-size) solid var(--board-border-color, #8a8a8a);
-  // box-shadow: 0px var(--box-shadow-offset) var(--shadow-color);
   box-shadow: 0px var(--box-shadow-offset) var(--board-shadow-color, #5b5b5b);
   margin-bottom: var(--box-shadow-offset);
 

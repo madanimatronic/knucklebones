@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { nanoid } from 'nanoid';
-import { FC, MouseEvent } from 'react';
+import { FC, MouseEvent, useMemo } from 'react';
 import { Dice } from '../Dice';
 import s from './PlayerField.module.scss';
 
@@ -15,9 +15,6 @@ interface PlayerFieldProps {
   className?: string;
 }
 
-// TODO: цвета можно сделать через calculateFieldDuplicates
-// например, если элементу соответствует 2 из calculateFieldDuplicates, то
-// значит, что он повторяется дважды и присваиваем ему класс с синим цветом
 export const PlayerField: FC<PlayerFieldProps> = ({
   fieldData,
   calculateColumnPointsFunction,
@@ -28,26 +25,33 @@ export const PlayerField: FC<PlayerFieldProps> = ({
   isMainPlayer = false,
   className: additionalClassName,
 }) => {
-  // TODO: сделать оптимизацию объявлений функций и подсчётов (useMemo и т.д.)
   const handleColumnClick = (evt: MouseEvent<HTMLDivElement>) => {
     if (isInteractive && columnClickCallback) {
       const target = evt.currentTarget as HTMLDivElement;
       columnClickCallback(Number(target.id));
     }
   };
-  const columnPoints = fieldData.map((column) =>
-    calculateColumnPointsFunction(column),
+  const columnPoints = useMemo(
+    () => fieldData.map((column) => calculateColumnPointsFunction(column)),
+    [fieldData, calculateColumnPointsFunction],
   );
   // Каждый элемент в колонке - это кол-во повторений этого же элемента в колонке исходного поля
-  const fieldDuplications = calculateFieldDuplicatesFunction(fieldData);
+  const fieldDuplications = useMemo(
+    () => calculateFieldDuplicatesFunction(fieldData),
+    [fieldData, calculateFieldDuplicatesFunction],
+  );
   // Форматированные данные для рендера (TODO: можно вынести в функцию)
-  const formattedFieldData = fieldData.map((column) => {
-    const formattedColumn = [];
-    for (let i = 0; i < fieldData.length; i++) {
-      formattedColumn.push(column[i] ? column[i] : null);
-    }
-    return formattedColumn;
-  });
+  const formattedFieldData = useMemo(
+    () =>
+      fieldData.map((column) => {
+        const formattedColumn = [];
+        for (let i = 0; i < fieldData.length; i++) {
+          formattedColumn.push(column[i] ? column[i] : null);
+        }
+        return formattedColumn;
+      }),
+    [fieldData],
+  );
   return (
     <div
       className={clsx(

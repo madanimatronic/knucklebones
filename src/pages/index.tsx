@@ -12,24 +12,20 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 // TODO: хорошим и современным способом разделить логику и UI
 // В компонентах и не только - это вынести логику в кастомный хук (если будет нужно)
 // TODO: подумать над тестами и storybook в проекте (если будет уместно)
-// TODO: не забыть про подсчёт очков в колонках и увеличении очков
-// при комбинациях кубиков
-
-// TODO: пройти по всем файлам стилей и вынести цвета в константы
-// TODO: переписать README
-// TODO: проверить страницу на скролл при разных разрешениях экрана
+// TODO: Убедиться, что компоненты, страница, игровые сущности и утилиты
+// смогут без проблем переехать на новый проект (не должно быть жесткой привязки к этому проекту)
 
 // Задержка хода бота в МС
-const botDelay = 100;
+const botDelay = 1000;
 
 export default function Home() {
   // TODO: возможно стоит сделать методы Game статическими и тогда
   // не надо будет создавать объект класса
   const game = useMemo(() => new Game(), []);
-  const [playerState, setPlayerState] = useState(
-    new Player(1, 'Super Main Player', true),
-  );
-  const [botState, setBotState] = useState(new Player(2, 'Bot1'));
+
+  const [playerState, setPlayerState] = useState(new Player(1, 'Player', true));
+
+  const [botState, setBotState] = useState(new Player(2, 'Bot'));
 
   const [diceState, setDiceState] = useState(1);
 
@@ -37,8 +33,6 @@ export default function Home() {
 
   const [isGameRunning, setIsGameRunning] = useState(true);
 
-  // TODO: подумать как побороть моргание экрана при загрузке страницы
-  // (или можно сделать лоадер при загрузке страницы)
   const [isDarkMode, setIsDarkMode] = useState(true);
 
   const [isPageLoading, setIsPageLoading] = useState(true);
@@ -92,7 +86,6 @@ export default function Home() {
   useEffect(() => {
     setDiceState(game.throwDice());
     setIsBotMove(Math.random() >= 0.5);
-    // console.log(window.matchMedia('(prefers-color-scheme: light)'));
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: light)');
 
@@ -113,7 +106,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    // Логика хода бота
+    // Логика хода бота (выбирает случайную доступную колонку)
     if (isBotMove && isGameRunning) {
       setTimeout(() => {
         handlePlayerMove(
@@ -193,7 +186,7 @@ export default function Home() {
             availableColumns={game.getAvailableColumns(playerState)}
             columnClickCallback={(colIndex) => {
               handlePlayerMove(playerState, colIndex, botState);
-              console.log(colIndex);
+              // console.log(colIndex);
             }}
           />
           <div className={s.gameResultContainer}>
