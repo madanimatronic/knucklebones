@@ -12,7 +12,7 @@
   column-gap: var(--field-gap);
   width: fit-content;
   margin-bottom: var(--points-container-cover-margin);
-  @include mixins.custom-dashed-border(2px, rgb(130, 130, 130), 5px);
+  @include mixins.custom-dashed-border(4px, rgb(130, 130, 130), 5px);
 
   // Адаптив для Dice и для PlayerField задан
   // отдельно друг от друга, что не совсем хорошо
@@ -83,6 +83,18 @@
     // background: rgba(255, 102, 56, 0.5);
     justify-content: center;
     align-items: center;
+
+    @include mixins.responsive('lg') {
+      padding-top: 16px;
+    }
+
+    @include mixins.responsive('md') {
+      padding-top: 12px;
+    }
+
+    @include mixins.responsive('lg-height') {
+      padding-top: 12px;
+    }
   }
 }
 
@@ -102,7 +114,7 @@
 
 // Класс для главного ирока. Выделяет его интерфейс
 .mainPlayer {
-  @include mixins.custom-dashed-border(2px, $full-red, 5px);
+  @include mixins.custom-dashed-border(4px, $full-red, 5px);
   margin-bottom: 0;
   margin-top: var(--points-container-cover-margin);
 }

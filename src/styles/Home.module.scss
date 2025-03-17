@@ -53,7 +53,7 @@
 }
 
 .light {
-  --background: #bac299;
+  --background: #fef0d3;
   --foreground: #000000;
 }
 
@@ -81,7 +81,7 @@
   align-items: center;
   justify-items: center;
   column-gap: var(--grid-column-gap);
-  @include mixins.custom-dashed-border(2px, $full-red, var(--base-padding));
+  // @include mixins.custom-dashed-border(2px, $full-red, var(--base-padding));
 
   @include mixins.responsive('md') {
     grid-template-rows: 1fr 140px 1fr;
@@ -98,13 +98,38 @@
   @include mixins.responsive('md-height') {
     grid-template-rows: 1fr 120px 1fr;
   }
+
+  // К сожалению, такое странное решение обусловлено большой сложностью динамической замены
+  // цвета в рамке. Это особенность реализации рамки, поэтому приходится использовать отдельные классы
+  &.darkThemeDashedBorder {
+    @include mixins.custom-dashed-border(2px, $full-red, var(--base-padding));
+  }
+
+  &.lightThemeDashedBorder {
+    @include mixins.custom-dashed-border(
+      2px,
+      rgb(0, 0, 0),
+      var(--base-padding)
+    );
+  }
 }
 
 .themeButton {
   align-self: flex-start;
   justify-self: flex-start;
+  background: none;
+  border: none;
+  font-size: 0;
   cursor: pointer;
 
+  &:focus-visible {
+    // outline: 2px dashed $full-red;
+    outline: 2px dashed var(--foreground);
+    outline-offset: 1px;
+  }
+}
+
+.themeIcon {
   @include mixins.responsive('sm') {
     width: 40px;
     height: 40px;
@@ -174,22 +199,53 @@
     }
 
     &:focus-visible {
-      outline: 2px solid $full-white;
+      outline: 2px dashed var(--foreground);
+      outline-offset: 1px;
     }
   }
-  .hidden {
-    visibility: hidden;
-  }
+}
+
+.hidden {
+  visibility: hidden;
 }
 
 .botField {
   grid-row: 1;
   grid-column: 2;
+
+  // Здесь те же трудности работы с пунктирной рамкой
+  // Задаём её в стилях страницы, потому что на странице есть информация о выбранной
+  // цветовой теме
+  // P.S. В самом компоненте поля уже задана стандартная рамка, но её можно переопределить
+  &.darkThemeDashedBorder {
+    @include mixins.custom-dashed-border(4px, rgb(130, 130, 130), 5px);
+  }
+
+  &.lightThemeDashedBorder {
+    @include mixins.custom-dashed-border(4px, rgb(91, 173, 137), 5px);
+  }
 }
 
 .botWidgets {
   grid-row: 1;
   grid-column: 3;
+
+  // Стандартный цвет описан в самом компоненте,
+  // а здесь задаётся нужный цвет для цветовой темы страницы
+  // Цвет доски в тёмной теме может совпадать со стандартным цветом, но не обязан
+  // P.S. в компоненте виджетов стандартный стиль доски - стиль в тёмной теме,
+  // поэтому его можно повторно не определять,
+  // но для большего контроля и ясности всё же желательно это сделать
+  &.light {
+    --board-main-color: #386752;
+    --board-border-color: #57a080;
+    --board-shadow-color: #305545;
+  }
+  &.dark {
+    --board-main-color: #5e5e5e;
+    --board-border-color: #8a8a8a;
+    --board-shadow-color: #5b5b5b;
+  }
 }
 
 // TODO:

@@ -32,16 +32,17 @@
 // TODO: для красоты можно добавить соотношение сторон,
 // чтобы при сжатии у доски сохранялись какие-то пропорции
 .board {
-  --shadow-color: #5b5b5b;
+  // --shadow-color: #5b5b5b;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #5e5e5e;
+  background-color: var(--board-main-color, #5e5e5e);
   max-height: 190px;
   height: 100%;
   align-self: stretch;
-  border: var(--border-size) solid #8a8a8a;
-  box-shadow: 0px var(--box-shadow-offset) var(--shadow-color);
+  border: var(--border-size) solid var(--board-border-color, #8a8a8a);
+  // box-shadow: 0px var(--box-shadow-offset) var(--shadow-color);
+  box-shadow: 0px var(--box-shadow-offset) var(--board-shadow-color, #5b5b5b);
   margin-bottom: var(--box-shadow-offset);
 
   @include mixins.responsive('sm') {
@@ -50,10 +51,9 @@
 }
 
 .mainPlayer {
-  --shadow-color: #6d140c;
-  background-color: #74150c;
-  // background-color: #8a190e;
-  border-color: #cc1b06;
+  --board-main-color: #74150c;
+  --board-border-color: #cc1b06;
+  --board-shadow-color: #6d140c;
 }
 
 .reversed {

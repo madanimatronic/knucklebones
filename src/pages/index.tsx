@@ -41,6 +41,8 @@ export default function Home() {
   // (или можно сделать лоадер при загрузке страницы)
   const [isDarkMode, setIsDarkMode] = useState(true);
 
+  const [isPageLoading, setIsPageLoading] = useState(true);
+
   // Добавляет кубик в колонку активного игрока и обновляет поля игроков
   // Также переключает ход, определяет новое состояние игры и кидает кубик
   // для хода другого игрока
@@ -103,6 +105,8 @@ export default function Home() {
     // Срабатывает когда пользователь меняет предпочтение темы без перезагрузки
     mediaQuery.addEventListener('change', handleChange);
 
+    setIsPageLoading(false);
+
     return () => {
       mediaQuery.removeEventListener('change', handleChange);
     };
@@ -132,19 +136,41 @@ export default function Home() {
         metaDescription='some description'
         iconLink='/favicon.ico'
       />
-      <div className={clsx(s.page, isDarkMode ? s.dark : s.light)}>
-        <main className={s.main}>
-          {/* TODO: Обернуть Image в кнопку для доступности и 
-          стилизовать обводку при выборе через tab */}
-          <Image
+      {/* Скрывать страницу на время загрузки помогает избежать вспышки
+      Ещё благодаря стилям в globals когда страница спрятана, фон body (и html) будет
+      соответствовать выбранной теме и будет либо черным, либо белым
+      Даже если будет виден этот фон, то переход между ним и страницей не будет сильно выделяться */}
+      <div
+        className={clsx(s.page, isDarkMode ? s.dark : s.light, {
+          [s.hidden]: isPageLoading,
+        })}
+      >
+        <main
+          className={clsx(
+            s.main,
+            isDarkMode ? s.darkThemeDashedBorder : s.lightThemeDashedBorder,
+          )}
+        >
+          <button
             className={s.themeButton}
-            src={isDarkMode ? '/light-mode.svg' : '/dark-mode.svg'}
+            aria-label='theme button'
             onClick={() => setIsDarkMode(!isDarkMode)}
-            alt='theme-mode button'
-            width={50}
-            height={50}
-            priority
-          />
+          >
+            {/* Не рендерим иконку при загрузке, потому что может
+            пререндериться не та иконка, появляется мерцание и заметна смена иконки
+            При таком подходе всё равно может быть небольшое мерцание,
+            но так всё же лучше */}
+            {!isPageLoading && (
+              <Image
+                className={s.themeIcon}
+                src={isDarkMode ? '/light-mode.svg' : '/dark-mode.svg'}
+                alt='theme icon'
+                width={50}
+                height={50}
+                priority
+              />
+            )}
+          </button>
           <PlayerWidgets
             className={s.playerWidgets}
             playerName={playerState.name}
@@ -191,7 +217,10 @@ export default function Home() {
             </button>
           </div>
           <PlayerField
-            className={s.botField}
+            className={clsx(
+              s.botField,
+              isDarkMode ? s.darkThemeDashedBorder : s.lightThemeDashedBorder,
+            )}
             fieldData={reverseField(botState.field)}
             calculateColumnPointsFunction={game.calculateColumnPoints.bind(
               game,
@@ -201,7 +230,7 @@ export default function Home() {
             )}
           />
           <PlayerWidgets
-            className={s.botWidgets}
+            className={clsx(s.botWidgets, isDarkMode ? s.dark : s.light)}
             playerName={botState.name}
             playerPoints={game.calculatePlayerPoints(botState)}
             diceValue={diceState}
